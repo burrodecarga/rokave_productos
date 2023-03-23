@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CardImage extends StatelessWidget {
-  const CardImage({super.key});
+  final String? url;
+  const CardImage({super.key, this.url});
 
   @override
   Widget build(BuildContext context) {
@@ -12,10 +13,15 @@ class CardImage extends StatelessWidget {
           height: 300,
           decoration: _CardImageDecoration(),
           child: ClipRRect(
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(45), topRight: Radius.circular(45)),
-            child: FadeInImage(
-              image: NetworkImage('https://via.placeholder.com/400x300/green'),
+            child: url == null
+                ? const Image(
+                    image: AssetImage('assets/no-image.png'),
+                    fit: BoxFit.cover,
+                  )
+                : FadeInImage(
+                    image: NetworkImage(url!),
               placeholder: const AssetImage('assets/jar-loading.gif'),
               fit: BoxFit.cover,
             ),
