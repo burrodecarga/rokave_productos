@@ -62,7 +62,7 @@ class ProductsService extends ChangeNotifier {
     final url = Uri.https(_baseUrl, 'products/${product.id}.json');
     final resp = await http.put(url, body: product.toJson());
     final decodeData = resp.body;
-    print(decodeData);
+    //print(decodeData);
     final index = products.indexWhere((element) => element.id == product.id);
     products[index] = product;
 
@@ -89,11 +89,11 @@ class ProductsService extends ChangeNotifier {
     final resp = await http.Response.fromStream(streamResponse);
     if (resp.statusCode != 200 && resp.statusCode != 201) {
       print('algo salió mal');
-      print(resp.body);
+      //print(resp.body);
       return null;
     }
     newPictureFile = null;
-    print(resp.body);
+    //print(resp.body);
     final decodeData = json.decode(resp.body);
     return decodeData['secure_url'];
   }

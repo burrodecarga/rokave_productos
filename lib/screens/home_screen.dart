@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rokave_productos/screens/screens.dart';
@@ -12,11 +14,19 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productsService = Provider.of<ProductsService>(context);
+    final authService = Provider.of<AuthService>(context, listen: false);
     if (productsService.isLoading) return LoadingScreen();
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Productos'),
+        leading: IconButton(
+          onPressed: () async {
+            await authService.logout();
+            Navigator.pushReplacementNamed(context, 'login');
+          },
+          icon: const Icon(Icons.logout_outlined),
+        ),
       ),
       body: ListView.builder(
         itemCount: productsService.products.length,

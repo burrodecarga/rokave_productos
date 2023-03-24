@@ -5,16 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class AuthService extends ChangeNotifier {
-  final String _base_url = 'identitytoolkit.googleapis.com';
+  final String _baseUrl = 'identitytoolkit.googleapis.com';
   final String _firebaseToken = 'AIzaSyBh-D8_FGP5QxK86wc58dIQO-wwW14NjUE';
-  final storage = const FlutterSecureStorage();
+  // ignore: prefer_const_constructors
+  final storage = FlutterSecureStorage();
 
   Future<String?> createUser(String email, String password) async {
     final Map<String, dynamic> authData = {
       'email': email,
       'password': password,
     };
-    final url = Uri.https(_base_url, '/v1/accounts:signUp', {
+    final url = Uri.https(_baseUrl, '/v1/accounts:signUp', {
       'key': _firebaseToken,
     });
 
@@ -22,7 +23,7 @@ class AuthService extends ChangeNotifier {
     final Map<String, dynamic> decodeResp = json.decode(resp.body);
     if (decodeResp.containsKey('idToken')) {
       ///return decodeResp['idToken'];
-      storage.write(key: 'idToken', value: decodeResp['idToken']);
+      await storage.write(key: 'idToken', value: decodeResp['idToken']);
       return null;
     } else {
       return decodeResp['error']['message'];
@@ -34,7 +35,7 @@ class AuthService extends ChangeNotifier {
       'email': email,
       'password': password,
     };
-    final url = Uri.https(_base_url, '/v1/accounts:signInWithPassword', {
+    final url = Uri.https(_baseUrl, '/v1/accounts:signInWithPassword', {
       'key': _firebaseToken,
     });
 
@@ -42,7 +43,8 @@ class AuthService extends ChangeNotifier {
     final Map<String, dynamic> decodeResp = json.decode(resp.body);
     if (decodeResp.containsKey('idToken')) {
       ///return decodeResp['idToken'];
-      storage.write(key: 'idToken', value: decodeResp['idToken']);
+      await storage.write(key: 'idToken', value: decodeResp['idToken']);
+      //print('Almacenado decodeResp idToken:' + decodeResp['idToken']);
       return null;
     } else {
       return decodeResp['error']['message'];
@@ -50,11 +52,14 @@ class AuthService extends ChangeNotifier {
   }
 
   Future logout() async {
-    storage.delete(key: 'idToken');
+    await storage.delete(key: 'idToken');
     return;
   }
 
   Future<String> readToken() async {
-    return await storage.read(key: 'idToken') ?? '';
+
+    final myToken = await storage.read(key: 'idToken') ?? 'no-token';
+    //print(myToken + 'El Token');
+    return myToken;
   }
 }

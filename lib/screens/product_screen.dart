@@ -62,7 +62,7 @@ class _ProductScreenBulid extends StatelessWidget {
                         print('No seleccionó nada');
                         return;
                       }
-                      print('Tenemos imagen: XXXXX' + pickedFile.path);
+                      ///print('Tenemos imagen: XXXXX' + pickedFile.path);
                       productsService.updateSelectedImage(pickedFile.path);
                     },
                   )),
@@ -81,7 +81,7 @@ class _ProductScreenBulid extends StatelessWidget {
                 final String? imageUrl = await productsService.uploadImage();
                 if (imageUrl != null) {
                   productFormProvider.product.picture = imageUrl;
-                  print(imageUrl + 'XXXXX IMAGEN URL XXXXXX');
+                  ///print(imageUrl + 'XXXXX IMAGEN URL XXXXXX');
                 }
           await productsService
               .saveOrCreateProduct(productFormProvider.product);
