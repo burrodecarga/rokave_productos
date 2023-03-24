@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:rokave_productos/screens/screens.dart';
 import 'package:rokave_productos/services/services.dart';
 
-void main() => runApp(AppState());
+void main() => runApp(const AppState());
 
 class AppState extends StatelessWidget {
   const AppState({super.key});
@@ -11,6 +11,7 @@ class AppState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(providers: [
+      ChangeNotifierProvider(create: (context) => AuthService()),
       ChangeNotifierProvider(create: (context) => ProductsService())
     ], child: const MyApp());
   }
@@ -24,11 +25,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Material App',
-      initialRoute: 'home',
+      initialRoute: 'cheking',
       routes: {
         'login': (_) => LoginScreen(),
         'home': (_) => HomeScreen(),
         'product': (_) => ProductScreen(),
+        'register': (_) => RegisterScreen(),
+        'checking': (_) => CheckAuth(),
       },
       theme: ThemeData.light().copyWith(
           scaffoldBackgroundColor: Colors.grey[300],

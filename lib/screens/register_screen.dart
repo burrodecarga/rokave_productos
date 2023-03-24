@@ -5,7 +5,7 @@ import 'package:rokave_productos/services/services.dart';
 import 'package:rokave_productos/widgets/widgets.dart';
 import 'package:rokave_productos/ui/input_decorations.dart';
 
-class LoginScreen extends StatelessWidget {
+class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,7 +17,8 @@ class LoginScreen extends StatelessWidget {
             child: Column(
           children: [
             const SizedBox(height: 10),
-            Text('login', style: Theme.of(context).textTheme.headlineSmall),
+            Text('Crear Cuenta',
+                style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 30),
             ChangeNotifierProvider(
                 create: (_) => LoginFormProvider(), child: _LoginForm())
@@ -29,11 +30,9 @@ class LoginScreen extends StatelessWidget {
                 shape: const MaterialStatePropertyAll(StadiumBorder()),
                 overlayColor:
                     MaterialStatePropertyAll(Colors.indigo.withOpacity(0.3))),
-            onPressed: () =>
-                Navigator.pushReplacementNamed(context, 'register'),
-            child: const Text('Crear una nueva cuenta',
+            onPressed: () => Navigator.pushReplacementNamed(context, 'login'),
+            child: const Text('¿ Ya tienes una cuenta ?',
                 style: TextStyle(color: Colors.black87))),
-        
         const SizedBox(height: 50),
       ]),
     )));
@@ -99,8 +98,8 @@ class _LoginForm extends StatelessWidget {
                           final authService =
                               Provider.of<AuthService>(context, listen: false);
                           loginForm.isLoading = true;
-                          final String? errorMessage = await authService.login(
-                              loginForm.email, loginForm.password);
+                          final String? errorMessage = await authService
+                              .createUser(loginForm.email, loginForm.password);
                           //await Future.delayed(const Duration(seconds: 3));
 
                           if (errorMessage == null) {
@@ -115,8 +114,7 @@ class _LoginForm extends StatelessWidget {
                   child: Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 80, vertical: 15),
-                      child: Text(
-                          loginForm.isLoading ? 'Esperar....' : 'Ingresar',
+                      child: Text(loginForm.isLoading ? 'Esperar....' : 'Crear',
                           style: const TextStyle(color: Colors.white))))
             ],
           )),

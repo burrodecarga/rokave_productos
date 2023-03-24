@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +7,7 @@ import 'package:rokave_productos/providers/product_form_privider.dart';
 import 'package:rokave_productos/services/products_service.dart';
 import 'package:rokave_productos/ui/input_decorations.dart';
 import 'package:rokave_productos/widgets/widgets.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProductScreen extends StatelessWidget {
   const ProductScreen({super.key});
@@ -51,7 +54,17 @@ class _ProductScreenBulid extends StatelessWidget {
                   child: IconButton(
                     icon: const Icon(Icons.camera_alt_outlined,
                         size: 30, color: Colors.white),
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () async {
+                      final picker = ImagePicker();
+                      final XFile? pickedFile = await picker.pickImage(
+                          source: ImageSource.camera, imageQuality: 100);
+                      if (pickedFile == null) {
+                        print('No seleccionó nada');
+                        return;
+                      }
+                      print('Tenemos imagen: XXXXX' + pickedFile.path);
+                      productsService.updateSelectedImage(pickedFile.path);
+                    },
                   )),
             ],
           ),
@@ -60,12 +73,22 @@ class _ProductScreenBulid extends StatelessWidget {
         ],
       )),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
+        onPressed: productsService.isSaving
+            ? null
+            : () async {
           productFormProvider.isValidForm();
+
+                final String? imageUrl = await productsService.uploadImage();
+                if (imageUrl != null) {
+                  productFormProvider.product.picture = imageUrl;
+                  print(imageUrl + 'XXXXX IMAGEN URL XXXXXX');
+                }
           await productsService
               .saveOrCreateProduct(productFormProvider.product);
         },
-        child: const Icon(Icons.save, size: 30),
+        child: productsService.isSaving
+            ? const CircularProgressIndicator(color: Colors.white)
+            : const Icon(Icons.save, size: 30),
       ),
     );
   }

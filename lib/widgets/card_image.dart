@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class CardImage extends StatelessWidget {
@@ -13,19 +15,9 @@ class CardImage extends StatelessWidget {
           height: 300,
           decoration: _CardImageDecoration(),
           child: ClipRRect(
-            borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(45), topRight: Radius.circular(45)),
-            child: url == null
-                ? const Image(
-                    image: AssetImage('assets/no-image.png'),
-                    fit: BoxFit.cover,
-                  )
-                : FadeInImage(
-                    image: NetworkImage(url!),
-              placeholder: const AssetImage('assets/jar-loading.gif'),
-              fit: BoxFit.cover,
-            ),
-          ),
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(45), topRight: Radius.circular(45)),
+              child: getImage(url)),
         ));
   }
 
@@ -40,4 +32,25 @@ class CardImage extends StatelessWidget {
         borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(45), topRight: Radius.circular(45)),
       );
+
+  Widget getImage(String? picture) {
+    if (picture == null) {
+      return const Image(
+        image: AssetImage('assets/no-image.png'),
+        fit: BoxFit.cover,
+      );
+    }
+    if (picture.startsWith('http')) {
+      return FadeInImage(
+        image: NetworkImage(url!),
+        placeholder: const AssetImage('assets/jar-loading.gif'),
+        fit: BoxFit.cover,
+      );
+    }
+
+    return Image.file(
+      File(picture),
+      fit: BoxFit.cover,
+    );
+  }
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:rokave_productos/models/models.dart';
 import 'dart:convert';
@@ -11,6 +13,7 @@ class ProductsService extends ChangeNotifier {
   Product? selectedProduct;
   bool isLoading = true;
   bool isSaving = false;
+  File? newPictureFile;
 
   ProductsService() {
     loadProducts();
@@ -64,5 +67,34 @@ class ProductsService extends ChangeNotifier {
     products[index] = product;
 
     return product.id!;
+  }
+
+  void updateSelectedImage(String path) {
+    selectedProduct?.picture = path;
+    newPictureFile = File.fromUri(Uri(path: path));
+    notifyListeners();
+  }
+
+  Future<String?> uploadImage() async {
+    if (newPictureFile == null) return null;
+    isSaving = true;
+    notifyListeners();
+    final url = Uri.parse(
+        'https://api.cloudinary.com/v1_1/dx0pryfzn/image/upload?upload_preset=autwc6pa');
+    final imageOuploadRequest = http.MultipartRequest('POST', url);
+    final file =
+        await http.MultipartFile.fromPath('file', newPictureFile!.path);
+    imageOuploadRequest.files.add(file);
+    final streamResponse = await imageOuploadRequest.send();
+    final resp = await http.Response.fromStream(streamResponse);
+    if (resp.statusCode != 200 && resp.statusCode != 201) {
+      print('algo salió mal');
+      print(resp.body);
+      return null;
+    }
+    newPictureFile = null;
+    print(resp.body);
+    final decodeData = json.decode(resp.body);
+    return decodeData['secure_url'];
   }
 }
