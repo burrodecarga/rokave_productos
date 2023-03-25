@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 
 import 'package:flutter/material.dart';
 import 'package:rokave_productos/models/models.dart';
@@ -15,13 +17,18 @@ class ProductsService extends ChangeNotifier {
   bool isSaving = false;
   File? newPictureFile;
 
+  final storage = FlutterSecureStorage();
+
+
   ProductsService() {
     loadProducts();
   }
 
   Future<List<Product>> loadProducts() async {
     isLoading = true;
-    final url = Uri.https(_baseUrl, 'products.json');
+    final url = Uri.https(_baseUrl, 'products.json',
+        {'auth': await storage.read(key: 'idToken') ?? ''});
+        
     final resp = await http.get(url);
     final Map<String, dynamic> productsMap = json.decode(resp.body);
     productsMap.forEach((key, value) {
@@ -50,8 +57,12 @@ class ProductsService extends ChangeNotifier {
   }
 
   Future<String> createProduct(Product product) async {
-    final url = Uri.https(_baseUrl, 'products.json');
-    final resp = await http.post(url, body: product.toJson());
+    final url = Uri.https(_baseUrl, 'products.json',
+        {'auth': await storage.read(key: 'idToken') ?? ''});
+    final resp = await http.post(
+      url,
+      body: product.toJson(),
+    );
     final decodeData = json.decode(resp.body);
     product.id = decodeData['name'];
     products.add(product);
@@ -59,7 +70,8 @@ class ProductsService extends ChangeNotifier {
   }
 
   Future<String> updateProduct(Product product) async {
-    final url = Uri.https(_baseUrl, 'products/${product.id}.json');
+    final url = Uri.https(_baseUrl, 'products/${product.id}.json',
+        {'auth': await storage.read(key: 'idToken') ?? ''});
     final resp = await http.put(url, body: product.toJson());
     final decodeData = resp.body;
     //print(decodeData);

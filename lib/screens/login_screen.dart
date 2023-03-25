@@ -33,7 +33,6 @@ class LoginScreen extends StatelessWidget {
                 Navigator.pushReplacementNamed(context, 'register'),
             child: const Text('Crear una nueva cuenta',
                 style: TextStyle(color: Colors.black87))),
-        
         const SizedBox(height: 50),
       ]),
     )));
@@ -109,6 +108,7 @@ class _LoginForm extends StatelessWidget {
                           } else {
                             // ignore: todo
                             //  TODO Mostrar error en pantalla
+                            NotificationsService.showSnackbar(errorMessage);
                           }
                           loginForm.isLoading = false;
                         },
